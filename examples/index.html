@@ -1,8 +1,5 @@
-<!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="../bower_components/jquery/dist/jquery.min.js"></script>
-
     <link rel="stylesheet" href="styles.css"></link>
 </head>
 <body class="darkBg">
@@ -10,13 +7,10 @@
         <input type="button" id="round" value="Rounded"/>
         <input type="button" id="shadows" value="Shadows"/>
         <input type="button" id="roundshadows" value="Rounded Shadows"/>
-        <input type="button" id="imgbut" value="Images"/>
-        <input type="button" id="collection" value="Snow Collection"/>
-        <input type="button" id="deviceorientation" value="Deviceorientation"/>
-    <div class="collectonme">
-        <p>Collect on meeeeee!!!</p>
-    </div>
-    <div class="collectonme">
+        <input type="button" id="imagebut" value="Images"/>
+        <input type="button" id="riseup" value="Rise up"/>
+        <input type="button" id="twoblocks" value="Two blocks"/>
+    <div id="collect" class="collectonme">
         <p>Collect on meeeeee!!!</p>
     </div>
     <div class="collectonme">
@@ -25,76 +19,73 @@
     <div class="test-container">
 
     </div>
-    <script src='../dist/snowfall.jquery.min.js'></script>
+    <script src='../dist/snowfall.min.js'></script>
     <script type='text/javascript'>     
-        $(document).ready(function(){
-            $('.collectonme').hide();
+        var collectOnMe = document.querySelectorAll('.collectonme'),
+            buttons = document.getElementsByTagName("input");
+        
+        for(var i = 0; i < collectOnMe.length; i++){
+            collectOnMe[i].style.display = "none";
+        }
+        
+        //default options
+        snowFall.snow(document.body);
 
-            //Start the snow default options you can also make it snow in certain elements, etc.
-            $(document).snowfall();
+        var testContainer = document.querySelector('.test-container'),
+            testContainerIsSnowing = true;
 
-            var $testContainer = $('.test-container'),
-                testContainerIsSnowing = true;
+        snowFall.snow(testContainer);
 
-            $testContainer.snowfall();
+        testContainer.addEventListener('click', function(e){
+            testContainerIsSnowing = !testContainerIsSnowing;
 
-            $testContainer.click(function(e){
-                testContainerIsSnowing = !testContainerIsSnowing;
+            if(!testContainerIsSnowing){
+                snowFall.snow(testContainer, "clear");
+            }else{
+                snowFall.snow(testContainer);
+            }
+        })
 
-                if(!testContainerIsSnowing){
-                    $testContainer.snowfall('clear');
-                }else{
-                    $testContainer.snowfall();
-                }
-            });
-
-            $("#clear").click(function(){
-                $(document).snowfall('clear'); // How you clear
-            });
-            
-            $("#round").click(function(){
-                document.body.className  = "darkBg";
-                $('.collectonme').hide();
-                $(document).snowfall('clear');
-                $(document).snowfall({round : true, minSize: 5, maxSize:8}); // add rounded
-            });
-            
-            $("#shadows").click(function(){
-                document.body.className  = "lightBg";
-                $('.collectonme').hide();
-                $(document).snowfall('clear');
-                $(document).snowfall({shadow : true, flakeCount:200}); // add shadows
-            });
-
-            $("#roundshadows").click(function(){
-                document.body.className  = "lightBg";
-                $('.collectonme').hide();
-                $(document).snowfall('clear');
-                $(document).snowfall({shadow : true, round : true,  minSize: 5, maxSize:8}); // add shadows
-            });
-            
-            $("#collection").click(function(){
-                $(document).snowfall('clear');
-                document.body.className  = "darkBg";
-                $('.collectonme').show();
-                $(document).snowfall({collection : '.collectonme', flakeCount : 250});
-            });
-            
-            $("#imgbut").click(function(){
-                $('.collectonme').hide();
-                $(document).snowfall('clear');
-                document.body.className  = "darkBg";
-                $(document).snowfall({image :"images/flake.png", minSize: 10, maxSize:32});
-            });
-
-            $("#deviceorientation").click(function(){
-                $(document).snowfall('clear');
-                $('.collectonme').hide();
-                document.body.className  = "darkBg";
-                $(document).snowfall({deviceorientation : true, round : true, minSize: 5, maxSize:8});
-            });
-
+        document.getElementById("clear").addEventListener("click", function(){
+            snowFall.snow(document.body, "clear");
         });
-     </script>
-</body>
+        
+        document.getElementById("round").addEventListener("click", function(){
+            document.body.className  = "darkBg";
+            snowFall.snow(document.body, "clear");
+            snowFall.snow(document.body, {round : true, minSize: 5, maxSize:8});
+        });
+        
+        document.getElementById("shadows").addEventListener("click", function(){
+            document.body.className  = "lightBg";
+            snowFall.snow(document.body, "clear");
+            snowFall.snow(document.body, {shadow : true, flakeCount:200});
+        });
+        
+        document.getElementById("roundshadows").addEventListener("click", function(){
+            document.body.className  = "lightBg";
+            snowFall.snow(document.body, "clear");
+            snowFall.snow(document.body, {round : true, shadow : true, minSize: 5, maxSize:8});
+        });
+        
+        document.getElementById("imagebut").addEventListener("click", function(){
+            document.body.className  = "darkBg";
+            snowFall.snow(document.body, "clear");
+            snowFall.snow(document.body, {image : "images/flake.png", minSize: 10, maxSize:32});
+        });
+
+        document.getElementById("riseup").addEventListener("click", function(){
+            snowFall.snow(document.body, "clear");
+            snowFall.snow(document.body, {shadow : true, flakeCount:200, riseUp: true});
+        });
+
+        document.getElementById("twoblocks").addEventListener("click", function(){
+            snowFall.snow(document.body, "clear");
+            snowFall.snow(document.body, {shadow : true, flakeCount:200, blocks: [
+                {'left': 10, 'right': 30}, {'left': 70, 'right': 90},
+            ]});
+        });
+    
+         </script>
+    </body>
 </html>

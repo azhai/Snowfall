@@ -78,6 +78,8 @@ var snowFall = (function(){
     function jSnow(){
         // local methods
         var defaults = {
+                blocks: [],
+                riseUp: false,
                 flakeCount : 35,
                 flakeColor : '#ffffff',
                 flakeIndex: 999999,
@@ -126,11 +128,13 @@ var snowFall = (function(){
                 }
             },
             // snowflake
-            flake = function(_el, _size, _speed)
+            flake = function(_el, _size, _speed, _left, _right)
             {
                 // Flake properties
-                this.x  = random(widthOffset, elWidth - widthOffset);
-                this.y  = random(0, elHeight);
+                this.left = _left;
+                this.right = _right;
+                this.x = random(this.left, this.right);
+                this.y = random(0, elHeight);
                 this.size = _size;
                 this.speed = _speed;
                 this.step = 0;
@@ -174,10 +178,16 @@ var snowFall = (function(){
                 
                 // Update function, used to update the snow flakes, and checks current snowflake against bounds
                 this.update = function(){
-                    this.y += this.speed;
-
-                    if(this.y > elHeight - (this.size  + 6)){
-                        this.reset();
+                    if (defaults.riseUp){
+                        this.y -= this.speed;
+                        if(this.y < 6){
+                            this.reset();
+                        }
+                    }else{
+                        this.y += this.speed;
+                        if(this.y > elHeight - (this.size  + 6)){
+                            this.reset();
+                        }
                     }
 
                     transform(this.element, 'translateY('+this.y+'px) translateX('+this.x+'px)');
@@ -185,17 +195,17 @@ var snowFall = (function(){
                     this.step += this.stepSize;
                     this.x += Math.cos(this.step);
                     
-                    if(this.x + this.size > elWidth - widthOffset || this.x < widthOffset){
+                    if(this.x + this.size > this.right || this.x < this.left){
                         this.reset();
                     }
                 }
                 
                 // Resets the snowflake once it reaches one of the bounds set
                 this.reset = function(){
-                    this.y = 0;
-                    this.x = random(widthOffset, elWidth - widthOffset);
                     this.stepSize = random(1,10) / 100;
                     this.size = random((defaults.minSize * 100), (defaults.maxSize * 100)) / 100;
+                    this.y = defaults.riseUp ? elHeight - this.size : 0;
+                    this.x = random(this.left, this.right);
                     this.element.style.width = this.size + 'px';
                     this.element.style.height = this.size + 'px';
                     this.speed = random(defaults.minSpeed, defaults.maxSpeed);
@@ -231,8 +241,24 @@ var snowFall = (function(){
                 }, true);
                 
                 // initialize the flakes
+                var size, speed, left = widthOffset, right = elWidth - widthOffset;
+                var b = -1, block_size = defaults.blocks.length;
+                var nextBlock = function(){
+                    if (block_size <= 1){
+                        return block_size - 1;
+                    }
+                    b = (b + 1) % block_size; //blocks round
+                    return b;
+                };
                 for(i = 0; i < defaults.flakeCount; i+=1){
-                    flakes.push(new flake(element, random((defaults.minSize * 100), (defaults.maxSize * 100)) / 100, random(defaults.minSpeed, defaults.maxSpeed)));
+                    size = random((defaults.minSize * 100), (defaults.maxSize * 100)) / 100;
+                    speed = random(defaults.minSpeed, defaults.maxSpeed);
+                    if (block_size > 0){
+                        b = nextBlock();
+                        left = defaults.blocks[b].left * elWidth / 100;
+                        right = defaults.blocks[b].right * elWidth / 100;
+                    }
+                    flakes.push(new flake(element, size, speed, left, right));
                 }
                 // start the snow
                 animateSnow();
