@@ -91,8 +91,8 @@ var snowFall = (function () {
             colorAlpha : 1,
             flakeIndex : 999999,
             flakePosition : 'absolute',
-            minSize : 1,
-            maxSize : 2,
+            minSize : 0,
+            maxSize : 0,
             minSpeed : 1,
             maxSpeed : 5,
             leftDeg : 0,
@@ -101,7 +101,7 @@ var snowFall = (function () {
             rounded : false,
             shadow : false,
             collection : false,
-            image : false,
+            image : '',
             background : false,
             riseUp : false,
             blocks : [],
@@ -138,6 +138,9 @@ var snowFall = (function () {
         },
         randomColor = function (max) {
             return Math.round((1 - Math.pow(Math.random(), 2) / 2) * max);
+        },
+        randomItem = function (arr) {
+            return arr[Math.floor(Math.random() * arr.length)];
         },
         randomRGB = function (color, alpha) {
             var r = randomColor('0x' + color.substr(1, 2)),
@@ -176,7 +179,7 @@ var snowFall = (function () {
 
             if (defaults.image) {
                 flakeObj = new Image();
-                flakeObj.src = defaults.image;
+                flakeObj.src = Array.isArray(defaults.image) ? randomItem(defaults.image) : defaults.image;
             } else {
                 flakeObj = document.createElement('div');
                 var backColor = defaults.flakeColor;
@@ -189,16 +192,18 @@ var snowFall = (function () {
             }
 
             flakeObj.className = 'snowfall-flakes';
-            setStyle(flakeObj, {
-                'width' : this.size,
-                'height' : this.size,
+            var options = {
                 'position' : defaults.flakePosition,
                 'top' : 0,
                 'left' : 0,
                 'will-change' : 'transform',
                 'fontSize' : 0,
                 'zIndex' : defaults.flakeIndex
-            });
+            };
+            if (this.size > 0) {
+                options['width'] = options['height'] = this.size;
+            }
+            setStyle(flakeObj, options);
 
             // This adds the style to make the snowflakes round via border radius property
             if (defaults.rounded) {
@@ -298,6 +303,9 @@ var snowFall = (function () {
 
                 // Set the background image
                 element.style.backgroundImage = defaults.background ? 'url(' + defaults.background + ')' : '';
+                if (defaults.image === false || defaults.image === null) {
+                    return;
+                }
 
                 // if this is the body the offset is a little different
                 if (element.tagName.toLowerCase() === 'body') {
@@ -367,7 +375,9 @@ var snowFall = (function () {
                         }
                     }
                 } else {
-                    elements.snow.clear();
+                    if (elements.snow) {
+                        elements.snow.clear();
+                    }
                 }
             } else {
                 if (elements.length > 0) {

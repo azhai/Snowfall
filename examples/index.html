@@ -1,91 +1,100 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh">
 <head>
-    <link rel="stylesheet" href="styles.css"></link>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Cache-control" content="no-cache" />
+    <meta name="viewport" content="width=device-width, width=640, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>新年快乐</title>
+    <style rel="stylesheet" type="text/css" />
+    * {
+        font-family: "Microsoft Yahei","Georgia",Arial,sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+    body{
+        text-align: center;
+    } 
+    div.wrap {
+        margin: 0 auto;
+        width: 640px;
+    }
+    #banner {
+        position: absolute;
+        overflow: hidden;
+        width: 640px;
+        height: 50px;
+        background-repeat: no-repeat;
+    }
+    #banner h1 {
+        color: #fda;
+        text-align: center;
+        vertical-align: middle;
+    }
+    </style>
 </head>
-<body class="darkBg">
-        <input type="button" id="clear" value="Click to clear"/>
-        <input type="button" id="round" value="Rounded"/>
-        <input type="button" id="shadows" value="Shadows"/>
-        <input type="button" id="roundshadows" value="Rounded Shadows"/>
-        <input type="button" id="imagebut" value="Images"/>
-        <input type="button" id="riseup" value="Rise up"/>
-        <input type="button" id="twoblocks" value="Two blocks"/>
-    <div id="collect" class="collectonme">
-        <p>Collect on meeeeee!!!</p>
-    </div>
-    <div class="collectonme">
-        <p>Collect on meeeeee!!!</p>
-    </div>
-    <div class="test-container">
 
+<body>
+    <div class="wrap">
+        <div id="banner" /><h1> 新 年 快 乐 </h1></div>
     </div>
-    <script src='../dist/snowfall.min.js'></script>
-    <script type='text/javascript'>     
-        var collectOnMe = document.querySelectorAll('.collectonme'),
-            buttons = document.getElementsByTagName("input");
-        
-        for(var i = 0; i < collectOnMe.length; i++){
-            collectOnMe[i].style.display = "none";
+
+    <script type="text/javascript" src="../dist/snowfall.min.js"></script>
+    <script type="text/javascript">
+    var opts = {
+        flakeCount: 12,
+        minSize: 16,
+        maxSize: 24,
+        minSpeed: 0.3,
+        maxSpeed: 2,
+        rounded: true,
+        colorful: true,
+        riseUp : false,
+        blocks : [],
+    };
+    var changeScreen = function (score) {
+        var riseUp = false, blocks = [];
+        if (score >= 5000) {
+            opts['background'] = 'images/sakura/background.jpg';
+            opts['image'] = [
+                'images/sakura/image1.png',
+                'images/sakura/image2.png',
+                'images/sakura/image3.png',
+                'images/sakura/image4.png'
+            ];
+        } else if (score >= 3000) {
+            opts['background'] = 'images/heart/background.jpg';
+            opts['image'] = '';
+            riseUp = true;
+            blocks = [
+                {'left': 5, 'right': 35},
+                {'left': 65, 'right': 95}
+            ];
+        } else if (score >= 2000) {
+            opts['background'] = 'images/daisy/background.jpg';
+            opts['image'] = [
+                'images/daisy/image1.png',
+                'images/daisy/image2.png',
+                'images/daisy/image3.png',
+                'images/daisy/image4.png'
+            ];
+            riseUp = true;
+        } else if (score >= 1000) {
+            opts['background'] = 'images/prism/background.jpg';
+            opts['image'] = false;
+        } else {
+            opts['background'] = false;
+            opts['image'] = false;
         }
-        
-        //default options
-        snowFall.snow(document.body);
+        opts['riseUp'] = riseUp;
+        opts['blocks'] = blocks;
+        snowFall.snow(document.getElementById('banner'), 'clear');
+        snowFall.snow(document.getElementById('banner'), opts);
+    };
 
-        var testContainer = document.querySelector('.test-container'),
-            testContainerIsSnowing = true;
-
-        snowFall.snow(testContainer);
-
-        testContainer.addEventListener('click', function(e){
-            testContainerIsSnowing = !testContainerIsSnowing;
-
-            if(!testContainerIsSnowing){
-                snowFall.snow(testContainer, "clear");
-            }else{
-                snowFall.snow(testContainer);
-            }
-        })
-
-        document.getElementById("clear").addEventListener("click", function(){
-            snowFall.snow(document.body, "clear");
-        });
-        
-        document.getElementById("round").addEventListener("click", function(){
-            document.body.className  = "darkBg";
-            snowFall.snow(document.body, "clear");
-            snowFall.snow(document.body, {round : true, minSize: 5, maxSize:8});
-        });
-        
-        document.getElementById("shadows").addEventListener("click", function(){
-            document.body.className  = "lightBg";
-            snowFall.snow(document.body, "clear");
-            snowFall.snow(document.body, {shadow : true, flakeCount:200});
-        });
-        
-        document.getElementById("roundshadows").addEventListener("click", function(){
-            document.body.className  = "lightBg";
-            snowFall.snow(document.body, "clear");
-            snowFall.snow(document.body, {round : true, shadow : true, minSize: 5, maxSize:8});
-        });
-        
-        document.getElementById("imagebut").addEventListener("click", function(){
-            document.body.className  = "darkBg";
-            snowFall.snow(document.body, "clear");
-            snowFall.snow(document.body, {image : "images/flake.png", minSize: 10, maxSize:32});
-        });
-
-        document.getElementById("riseup").addEventListener("click", function(){
-            snowFall.snow(document.body, "clear");
-            snowFall.snow(document.body, {shadow : true, flakeCount:200, riseUp: true});
-        });
-
-        document.getElementById("twoblocks").addEventListener("click", function(){
-            snowFall.snow(document.body, "clear");
-            snowFall.snow(document.body, {shadow : true, flakeCount:200, blocks: [
-                {'left': 10, 'right': 30}, {'left': 70, 'right': 90},
-            ]});
-        });
-    
-         </script>
-    </body>
+    changeScreen(Math.ceil(Math.random() * 12) * 500);
+    setInterval(function(){
+        changeScreen(Math.ceil(Math.random() * 12) * 500);
+    }, 3000);
+    </script>
+</body>
 </html>
